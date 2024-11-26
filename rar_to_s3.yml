@@ -22,6 +22,22 @@
         state: present
       when: ansible_os_family == "RedHat"
 
+    - name: Verify source folder exists
+      stat:
+        path: {{ source_folder }}
+      register: source_folder_status
+
+    - name: Fail if source folder does not exist
+      fail:
+        msg: "The source folder {{ source_folder }} does not exist."
+      when: not source_folder_status.stat.exists
+
+    - name: Populate source folder with a test file (if needed)
+      copy:
+        content: "This is a test file."
+        dest: "{{ source_folder }}/test_file.txt"
+      when: source_folder_status.stat.exists and source_folder_status.stat.isdir
+
     - name: Create a RAR archive
       shell: rar a {{ archive_name }} {{ source_folder }}
 
