@@ -24,16 +24,13 @@
 
     - name: Create a RAR archive
       shell: rar a {{ archive_name }} {{ source_folder }}
-      args:
-        warn: false
 
     - name: Extract the RAR archive
       shell: unrar x {{ archive_name }} {{ unzip_folder }}
-      args:
-        warn: false
 
     - name: Rename the unzipped file
       command: mv {{ unzip_folder }}/{{ old_file_name }} {{ unzip_folder }}/{{ new_file_name }}
 
     - name: Upload the renamed file to an S3 bucket
       shell: aws s3 cp {{ unzip_folder }}/{{ new_file_name }} s3://{{ s3_bucket }}/
+
