@@ -6,9 +6,10 @@
     source_folder: "/tmp/ansible"
     archive_name: "/tmp/my_archive.rar"
     unzip_folder: "/tmp/unzipped_folder"
-    old_file_name: "test.txt"
+    old_file_name: "test_file.txt"
     new_file_name: "new_test.txt"
     s3_bucket: "swapnil008"
+
   tasks:
     - name: Install required packages (e.g., `rar` and `unrar` for Debian-based systems)
       apt:
@@ -24,7 +25,7 @@
 
     - name: Verify source folder exists
       stat:
-        path: {{ source_folder }}
+        path: "{{ source_folder }}"
       register: source_folder_status
 
     - name: Fail if source folder does not exist
@@ -39,14 +40,20 @@
       when: source_folder_status.stat.exists and source_folder_status.stat.isdir
 
     - name: Create a RAR archive
-      shell: rar a {{ archive_name }} {{ source_folder }}
+      shell: rar a {{ archive_name }} {{ source_folder }}/*
+      args:
+        warn: false
 
     - name: Extract the RAR archive
       shell: unrar x {{ archive_name }} {{ unzip_folder }}
+      args:
+        warn: false
 
     - name: Rename the unzipped file
       command: mv {{ unzip_folder }}/{{ old_file_name }} {{ unzip_folder }}/{{ new_file_name }}
+      when: old_file_name is defined and new_file_name is defined
 
     - name: Upload the renamed file to an S3 bucket
       shell: aws s3 cp {{ unzip_folder }}/{{ new_file_name }} s3://{{ s3_bucket }}/
-
+      args:
+        warn: false
