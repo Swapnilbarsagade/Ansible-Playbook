@@ -1,0 +1,39 @@
+---
+- name: File Rar, Unzipping, Renaming, and Uploading to S3
+  hosts: all
+  become: yes
+  vars:
+    source_folder: "/home/ubuntu"
+    archive_name: "/tmp/my_archive.rar"
+    unzip_folder: "/tmp/unzipped_folder"
+    old_file_name: "test.txt"
+    new_file_name: "new_test.txt"
+    s3_bucket: "swapnil008"
+  tasks:
+    - name: Install required packages (e.g., `rar` and `unrar` for Debian-based systems)
+      apt:
+        name: [rar, unrar]
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install required packages (e.g., `rar` and `unrar` for RedHat-based systems)
+      yum:
+        name: [rar, unrar]
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Create a RAR archive
+      shell: rar a {{ archive_name }} {{ source_folder }}
+      args:
+        warn: false
+
+    - name: Extract the RAR archive
+      shell: unrar x {{ archive_name }} {{ unzip_folder }}
+      args:
+        warn: false
+
+    - name: Rename the unzipped file
+      command: mv {{ unzip_folder }}/{{ old_file_name }} {{ unzip_folder }}/{{ new_file_name }}
+
+    - name: Upload the renamed file to an S3 bucket
+      shell: aws s3 cp {{ unzip_folder }}/{{ new_file_name }} s3://{{ s3_bucket }}/
