@@ -3,7 +3,7 @@
   hosts: all
   become: yes
   vars:
-    source_folder: "/home/ubuntu"
+    source_folder: "/temp/ansible"
     archive_name: "/tmp/my_archive.rar"
     unzip_folder: "/tmp/unzipped_folder"
     old_file_name: "test.txt"
