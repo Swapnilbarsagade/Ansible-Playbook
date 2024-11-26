@@ -1,0 +1,42 @@
+#  Ubuntu/Debian-based Systems patching
+---
+- name: Patch servers
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update the package cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+        autoremove: yes
+
+    - name: Reboot the server if required
+      reboot:
+        msg: "Rebooting server after patching"
+        reboot_timeout: 300
+
+# CentOS/RedHat-based Systems patching
+
+---
+- name: Patch servers
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Clean up unused dependencies
+      package:
+        name: "*"
+        state: absent
+        autoremove: yes
+
+    - name: Reboot the server if required
+      reboot:
+        msg: "Rebooting server after patching"
+        reboot_timeout: 300
