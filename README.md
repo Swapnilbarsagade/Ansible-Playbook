@@ -23,9 +23,9 @@ ssh-keygen -t rsa -b 4096  # Save the key pair in the default location (~/.ssh/i
 
 ### copy the public key (~/.ssh/id_rsa.pub) to the ~/.ssh/authorized_keys file of the user account on each managed node.
 
-'''
- ssh-copy-id user@<managed_node_ip_or_hostname>
-'''
+
+    ssh-copy-id user@<managed_node_ip_or_hostname>
+
 
 ### Test Connectivity with Ansible
 
