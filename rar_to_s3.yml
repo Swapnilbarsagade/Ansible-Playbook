@@ -56,8 +56,24 @@
     - debug:
         msg: "RAR archive contents: {{ rar_test.stdout_lines }}"
 
-    - name: Extract the RAR archive
-      shell: unrar x -ep {{ archive_name }} {{ unzip_folder }}
+    - name: List the contents of the RAR archive
+      shell: unrar l "{{ archive_name }}"
+      register: rar_list
+
+    - debug:
+        msg: "RAR archive contents: {{ rar_list.stdout_lines }}"
+
+    - name: Extract the RAR archive with full paths
+      shell: unrar e "{{ archive_name }}" "{{ unzip_folder }}"
+      args:
+        warn: false
+
+    - name: List extracted files
+      shell: ls -l "{{ unzip_folder }}"
+      register: extracted_files
+
+    - debug:
+        msg: "Extracted files: {{ extracted_files.stdout_lines }}"
 
     - name: Rename the unzipped file
       command: mv {{ unzip_folder }}/{{ old_file_name }} {{ unzip_folder }}/{{ new_file_name }}
