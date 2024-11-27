@@ -36,8 +36,6 @@
         sudo mv /tmp/rar/rar /usr/local/bin/
         sudo mv /tmp/rar/unrar /usr/local/bin/
       when: ansible_os_family == "RedHat"
-      args:
-        warn: false
 
 
 #    - name: Install required packages (e.g., `rar` and `unrar` for RedHat-based systems)
