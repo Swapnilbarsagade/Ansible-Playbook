@@ -48,8 +48,6 @@
 
     - name: Create a RAR archive
       shell: rar a "{{ archive_name }}" "{{ source_folder }}/*"
-      args:
-        warn: false
 
     - name: Test the RAR archive
       command: rar v "{{ archive_name }}"
@@ -65,8 +63,6 @@
 
     - name: Extract the RAR archive with full paths
       shell: unrar x "{{ archive_name }}" "{{ unzip_folder }}"
-      args:
-        warn: false
 
     - name: Find the extracted file
       find:
@@ -85,5 +81,3 @@
 
     - name: Upload the renamed file to an S3 bucket
       shell: aws s3 cp "{{ unzip_folder }}/{{ new_file_name }}" s3://{{ s3_bucket }}/
-      args:
-        warn: false
