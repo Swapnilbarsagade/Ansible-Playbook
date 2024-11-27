@@ -17,11 +17,34 @@
         state: present
       when: ansible_os_family == "Debian"
 
+    - name: Enable EPEL repository for RedHat-based systems
+      yum:
+        name: epel-release
+        state: present
+      when: ansible_os_family == "RedHat"
+
     - name: Install required packages (e.g., `rar` and `unrar` for RedHat-based systems)
       yum:
         name: [rar, unrar]
         state: present
       when: ansible_os_family == "RedHat"
+
+    - name: Download and install RAR manually if not available in repositories
+      shell: |
+        wget https://www.rarlab.com/rar/rarlinux-x64-5.9.0.tar.gz -O /tmp/rarlinux.tar.gz
+        tar -xzf /tmp/rarlinux.tar.gz -C /tmp
+        sudo mv /tmp/rar/rar /usr/local/bin/
+        sudo mv /tmp/rar/unrar /usr/local/bin/
+      when: ansible_os_family == "RedHat"
+      args:
+        warn: false
+
+
+#    - name: Install required packages (e.g., `rar` and `unrar` for RedHat-based systems)
+#      yum:
+#        name: [rar, unrar]
+#        state: present
+#      when: ansible_os_family == "RedHat"
 
     - name: Verify source folder exists
       stat:
