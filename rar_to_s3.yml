@@ -57,7 +57,7 @@
         msg: "RAR archive contents: {{ rar_test.stdout_lines }}"
 
     - name: Extract the RAR archive
-      shell: unrar x {{ archive_name }} {{ unzip_folder }}
+      shell: unrar x -ep {{ archive_name }} {{ unzip_folder }}
 
     - name: Rename the unzipped file
       command: mv {{ unzip_folder }}/{{ old_file_name }} {{ unzip_folder }}/{{ new_file_name }}
