@@ -39,8 +39,22 @@
         dest: "{{ source_folder }}/test_file.txt"
       when: source_folder_status.stat.exists and source_folder_status.stat.isdir
 
+    - name: List files in the source folder
+      command: ls -l "{{ source_folder }}"
+      register: source_files
+
+    - debug:
+        msg: "Files in the source folder: {{ source_files.stdout_lines }}"
+
     - name: Create a RAR archive
       shell: rar a {{ archive_name }} {{ source_folder }}/*
+    
+    - name: Test the RAR archive
+      command: rar v "{{ archive_name }}"
+      register: rar_test
+
+    - debug:
+        msg: "RAR archive contents: {{ rar_test.stdout_lines }}"
 
     - name: Extract the RAR archive
       shell: unrar x {{ archive_name }} {{ unzip_folder }}
