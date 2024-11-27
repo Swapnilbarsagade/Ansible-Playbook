@@ -33,11 +33,17 @@
         msg: "The source folder {{ source_folder }} does not exist."
       when: not source_folder_status.stat.exists
 
+    - name: Create the source folder if it does not exist
+      file:
+        path: "{{ source_folder }}"
+        state: directory
+      when: not source_folder_status.stat.exists
+
     - name: Populate source folder with a test file (if needed)
       copy:
         content: "This is a test file."
         dest: "{{ source_folder }}/test_file.txt"
-      when: source_folder_status.stat.exists and source_folder_status.stat.isdir
+      when: source_folder_status.stat.isdir
 
     - name: List files in the source folder
       command: ls -l "{{ source_folder }}"
@@ -47,8 +53,8 @@
         msg: "Files in the source folder: {{ source_files.stdout_lines }}"
 
     - name: Create a RAR archive
-      shell: rar a {{ archive_name }} {{ source_folder }}/*
-    
+      shell: rar a "{{ archive_name }}" "{{ source_folder }}/*"
+
     - name: Test the RAR archive
       command: rar v "{{ archive_name }}"
       register: rar_test
@@ -63,9 +69,14 @@
     - debug:
         msg: "RAR archive contents: {{ rar_list.stdout_lines }}"
 
-    - name: Extract the RAR archive with full paths
-      shell: unrar e "{{ archive_name }}" "{{ unzip_folder }}"
+    - name: Create unzip folder if not exists
+      file:
+        path: "{{ unzip_folder }}"
+        state: directory
 
+    - name: Extract the RAR archive with full paths
+      shell: unrar x "{{ archive_name }}" "{{ unzip_folder }}"
+    
     - name: List extracted files
       shell: ls -l "{{ unzip_folder }}"
       register: extracted_files
@@ -74,8 +85,8 @@
         msg: "Extracted files: {{ extracted_files.stdout_lines }}"
 
     - name: Rename the unzipped file
-      command: mv {{ unzip_folder }}/{{ old_file_name }} {{ unzip_folder }}/{{ new_file_name }}
+      command: mv "{{ unzip_folder }}/{{ old_file_name }}" "{{ unzip_folder }}/{{ new_file_name }}"
       when: old_file_name is defined and new_file_name is defined
 
     - name: Upload the renamed file to an S3 bucket
-      shell: aws s3 cp {{ unzip_folder }}/{{ new_file_name }} s3://{{ s3_bucket }}/
+      shell: aws s3 cp "{{ unzip_folder }}/{{ new_file_name }}" "s3://{{ s3_bucket }}/"
