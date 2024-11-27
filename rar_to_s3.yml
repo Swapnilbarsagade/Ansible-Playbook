@@ -65,8 +65,6 @@
 
     - name: Extract the RAR archive with full paths
       shell: unrar e "{{ archive_name }}" "{{ unzip_folder }}"
-      args:
-        warn: false
 
     - name: List extracted files
       shell: ls -l "{{ unzip_folder }}"
